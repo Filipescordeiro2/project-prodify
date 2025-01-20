@@ -1,5 +1,6 @@
 package com.project.prodify.domain;
 
+import com.project.prodify.input.OrderItemRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,9 +19,12 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id",nullable = false)
     private Product product;
 
     @Column(nullable = false)
@@ -28,4 +32,10 @@ public class OrderItem {
 
     @Column(nullable = false)
     private BigDecimal subtotal;
+
+    public OrderItem(OrderItemRequest itemRequest, Product product) {
+        this.product = product;
+        this.quantity = itemRequest.getQuantity();
+        this.subtotal = product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
+    }
 }

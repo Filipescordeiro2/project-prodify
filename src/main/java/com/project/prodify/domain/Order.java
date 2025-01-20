@@ -1,5 +1,6 @@
 package com.project.prodify.domain;
 
+import com.project.prodify.input.OrderRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,8 +21,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
-    @JoinColumn(name = "orderItem_id")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(nullable = false)
     private List<OrderItem>items;
 
@@ -31,6 +31,16 @@ public class Order {
     @PrePersist
     public void prePersist(){
         this.purchaseDate = LocalDateTime.now();
+    }
+
+    public Order(OrderRequest request, List<OrderItem> items) {
+        this.items = items;
+        this.total = items.stream()
+                .map(OrderItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        for (OrderItem item : items) {
+            item.setOrder(this);
+        }
     }
 
 

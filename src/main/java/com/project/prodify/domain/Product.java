@@ -1,7 +1,9 @@
 package com.project.prodify.domain;
 
+import com.project.prodify.input.ProductRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,23 +15,21 @@ import java.time.LocalDateTime;
 @Table(name = "products")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "product_name",unique = true,nullable = false)
+    @Column(name = "product_name",unique = true)
     private String name;
-    @Column(name = "product_price",nullable = false)
+    @Column(name = "product_price")
     private BigDecimal price;
-    @Column(name = "product_stock",nullable = false)
+    @Column(name = "product_stock")
     private int stock;
-    @Column(nullable = false)
     private LocalDateTime creationDate;
-    @Column(nullable = false)
     private LocalDateTime modificationDate;
-    @Column(nullable = false)
     private boolean status;
 
     @PrePersist
@@ -42,6 +42,12 @@ public class Product {
     @PreUpdate
     public void preUpdate(){
         this.modificationDate = LocalDateTime.now();
+    }
+
+    public Product(ProductRequest request){
+        this.name = request.getName();
+        this.price = request.getPrice();
+        this.stock = request.getStock();
     }
 
 }
