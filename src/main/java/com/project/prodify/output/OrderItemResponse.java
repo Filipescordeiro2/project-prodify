@@ -8,7 +8,7 @@ import java.util.List;
 
 @Builder
 public record OrderItemResponse(
-        Long productId,
+        String SKU,
         int quantity,
         BigDecimal subtotal) {
 }

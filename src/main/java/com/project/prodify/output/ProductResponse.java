@@ -13,5 +13,6 @@ public record ProductResponse(
         , int stock
         , LocalDateTime creationDate
         , LocalDateTime modificationDate
-        , boolean status) {
+        , boolean status
+        , String SKU) {
 }

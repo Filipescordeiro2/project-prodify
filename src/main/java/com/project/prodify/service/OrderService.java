@@ -6,10 +6,11 @@ import com.project.prodify.domain.Product;
 import com.project.prodify.input.OrderRequest;
 import com.project.prodify.output.OrderItemResponse;
 import com.project.prodify.output.OrderResponse;
-import com.project.prodify.repository.OrderItemRepository;
 import com.project.prodify.repository.OrderRepository;
 import com.project.prodify.repository.ProductRepository;
+import com.project.prodify.utils.Validation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,23 +19,35 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private  final ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final Validation validation;
 
     @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest) {
-        List<OrderItem> orderItems = searchProduct(orderRequest);
-        Order order = new Order(orderRequest, orderItems);
-        order = orderRepository.save(order);
-        return mapToOrderResponse(order);
+        try {
+            List<OrderItem> orderItems = searchProduct(orderRequest);
+            Order order = new Order(orderRequest, orderItems);
+            order = orderRepository.save(order);
+            OrderResponse orderResponse = mapToOrderResponse(order);
+            log.info("Order created successfully: {}", orderResponse);
+            return orderResponse;
+        } catch (RuntimeException e) {
+            log.error("Runtime exception occurred while creating order", e);
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.error("Error creating order", e);
+            throw new RuntimeException("Error creating order", e);
+        }
     }
+
     private OrderResponse mapToOrderResponse(Order order) {
         List<OrderItemResponse> itemResponses = order.getItems().stream().map(orderItem -> {
             return OrderItemResponse.builder()
-                    .productId(orderItem.getProduct().getId())
+                    .SKU(orderItem.getProduct().getSKU())
                     .quantity(orderItem.getQuantity())
                     .subtotal(orderItem.getSubtotal())
                     .build();
@@ -47,17 +60,19 @@ public class OrderService {
                 .purchaseDate(order.getPurchaseDate())
                 .build();
     }
+
     private List<OrderItem> searchProduct(OrderRequest orderRequest) {
         return orderRequest.getItems().stream().map(itemRequest -> {
             Product product = productRepository.findById(itemRequest.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
             if (product.getStock() < itemRequest.getQuantity()) {
+                log.error("Insufficient stock for product: {}", product.getName());
                 throw new RuntimeException("Insufficient stock for product: " + product.getName());
             }
+            validation.validQuantity(itemRequest.getQuantity());
             product.setStock(product.getStock() - itemRequest.getQuantity());
             productRepository.save(product);
             return new OrderItem(itemRequest, product);
         }).collect(Collectors.toList());
     }
 }
-
