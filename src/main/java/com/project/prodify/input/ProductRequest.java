@@ -19,5 +19,7 @@ public class ProductRequest {
     private BigDecimal price;
     @NotBlank(message = "Stock is requeired")
     private int stock;
+    @NotBlank(message = "Status is requeired")
+    private boolean status;
 
 }

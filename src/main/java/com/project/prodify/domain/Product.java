@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -24,6 +25,8 @@ public class Product {
 
     @Column(name = "product_name",unique = true)
     private String name;
+    @Column(name = "product_sku",unique = true)
+    private String SKU;
     @Column(name = "product_price")
     private BigDecimal price;
     @Column(name = "product_stock")
@@ -36,7 +39,7 @@ public class Product {
     public void prePersist(){
         this.creationDate = LocalDateTime.now();
         this.modificationDate = LocalDateTime.now();
-        this.status = true;
+        this.SKU = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
     }
 
     @PreUpdate

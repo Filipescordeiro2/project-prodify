@@ -19,4 +19,20 @@ public class ProductController {
     private ProductResponse  saveProduct (@RequestBody ProductRequest request){
         return productService.saveProduct(request);
     }
+
+    @GetMapping("/name/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    private ProductResponse findProductName(@PathVariable String name){
+        return productService.findProductName(name);
+    }
+    @GetMapping("/SKU/{SKU}")
+    @ResponseStatus(HttpStatus.OK)
+    private ProductResponse findProductSKU(@PathVariable String SKU){
+        return productService.findProductSKU(SKU);
+    }
+    @DeleteMapping("/SKU/{SKU}")
+    private String deletedProduct(@PathVariable String SKU){
+        return productService.deleteProduct(SKU);
+    }
+
 }

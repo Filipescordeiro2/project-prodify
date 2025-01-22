@@ -28,20 +28,25 @@ public class Order {
     private BigDecimal total;
     private LocalDateTime purchaseDate;
 
+
+    private BigDecimal calculateTotal() {
+        return items.stream()
+                .map(OrderItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     @PrePersist
     public void prePersist(){
         this.purchaseDate = LocalDateTime.now();
+        this.total = calculateTotal();
     }
 
     public Order(OrderRequest request, List<OrderItem> items) {
         this.items = items;
-        this.total = items.stream()
-                .map(OrderItem::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        this.total = calculateTotal();
         for (OrderItem item : items) {
             item.setOrder(this);
         }
     }
-
 
 }
