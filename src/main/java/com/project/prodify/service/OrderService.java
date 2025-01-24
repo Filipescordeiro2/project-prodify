@@ -11,6 +11,9 @@ import com.project.prodify.repository.ProductRepository;
 import com.project.prodify.utils.Validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +45,26 @@ public class OrderService {
             log.error("Error creating order", e);
             throw new RuntimeException("Error creating order", e);
         }
+    }
+
+    public OrderResponse findOrderById(Long id) {
+        var order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        return mapToOrderResponse(order);
+    }
+
+    public Page<OrderResponse> findOrdersBySKUProduct(String SKU, Pageable pageable) {
+        var orders = orderRepository.findAll(pageable);
+        List<OrderResponse> matchingOrders = orders.stream()
+                .filter(order -> order.getItems().stream()
+                        .anyMatch(item -> item.getProduct().getSKU().equals(SKU)))
+                .map(this::mapToOrderResponse)
+                .collect(Collectors.toList());
+
+        if (matchingOrders.isEmpty()) {
+            throw new RuntimeException("No orders with product SKU found");
+        }
+        return new PageImpl<>(matchingOrders, pageable, matchingOrders.size());
     }
 
     private OrderResponse mapToOrderResponse(Order order) {

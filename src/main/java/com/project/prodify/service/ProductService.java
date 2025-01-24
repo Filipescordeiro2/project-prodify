@@ -59,13 +59,13 @@ public class ProductService {
         }
     }
 
-    public String deleteProduct(String SKU){
-        try{
-            var prodcut = findProduct(SKU,productRepository::findBySKU);
+    public String deleteProduct(String SKU) {
+        try {
+            var prodcut = findProduct(SKU, productRepository::findBySKU);
             productRepository.delete(prodcut);
-            return "Product deleted successfully --> "+prodcut;
-        }catch (Exception e){
-            throw new RuntimeException("Error in deleted for product --> "+SKU);
+            return "Product deleted successfully --> " + prodcut;
+        } catch (Exception e) {
+            throw new RuntimeException("Error in deleted for product --> " + SKU);
         }
     }
 

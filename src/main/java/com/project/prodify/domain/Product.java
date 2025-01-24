@@ -19,21 +19,21 @@ import java.util.UUID;
 @Builder
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
 
-    @Column(name = "product_name",unique = true)
-    private String name;
-    @Column(name = "product_sku",unique = true)
-    private String SKU;
-    @Column(name = "product_price")
-    private BigDecimal price;
-    @Column(name = "product_stock")
-    private int stock;
-    private LocalDateTime creationDate;
-    private LocalDateTime modificationDate;
-    private boolean status;
+        @Column(name = "product_name",unique = true)
+        private String name;
+        @Column(name = "product_sku",unique = true)
+        private String SKU;
+        @Column(name = "product_price")
+        private BigDecimal price;
+        @Column(name = "product_stock")
+        private int stock;
+        private LocalDateTime creationDate;
+        private LocalDateTime modificationDate;
+        private boolean status;
 
     @PrePersist
     public void prePersist(){
