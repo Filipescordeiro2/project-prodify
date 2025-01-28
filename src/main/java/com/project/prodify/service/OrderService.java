@@ -3,6 +3,7 @@ package com.project.prodify.service;
 import com.project.prodify.domain.Order;
 import com.project.prodify.domain.OrderItem;
 import com.project.prodify.domain.Product;
+import com.project.prodify.exception.OrderValidationException;
 import com.project.prodify.input.OrderRequest;
 import com.project.prodify.output.OrderItemResponse;
 import com.project.prodify.output.OrderResponse;
@@ -38,18 +39,18 @@ public class OrderService {
             OrderResponse orderResponse = mapToOrderResponse(order);
             log.info("Order created successfully: {}", orderResponse);
             return orderResponse;
-        } catch (RuntimeException e) {
+        } catch (OrderValidationException e) {
             log.error("Runtime exception occurred while creating order", e);
-            throw new RuntimeException(e);
+            throw new OrderValidationException("Runtime exception occurred while creating order");
         } catch (Exception e) {
             log.error("Error creating order", e);
-            throw new RuntimeException("Error creating order", e);
+            throw new OrderValidationException("Error creating order");
         }
     }
 
     public OrderResponse findOrderById(Long id) {
         var order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new OrderValidationException("Order not found"));
         return mapToOrderResponse(order);
     }
 
@@ -62,7 +63,7 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         if (matchingOrders.isEmpty()) {
-            throw new RuntimeException("No orders with product SKU found");
+            throw new OrderValidationException("No orders with product SKU found");
         }
         return new PageImpl<>(matchingOrders, pageable, matchingOrders.size());
     }
@@ -87,10 +88,10 @@ public class OrderService {
     private List<OrderItem> searchProduct(OrderRequest orderRequest) {
         return orderRequest.getItems().stream().map(itemRequest -> {
             Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
+                    .orElseThrow(() -> new OrderValidationException("Product not found"));
             if (product.getStock() < itemRequest.getQuantity()) {
                 log.error("Insufficient stock for product: {}", product.getName());
-                throw new RuntimeException("Insufficient stock for product: " + product.getName());
+                throw new OrderValidationException("Insufficient stock for product: " + product.getName());
             }
             validation.validQuantity(itemRequest.getQuantity());
             product.setStock(product.getStock() - itemRequest.getQuantity());

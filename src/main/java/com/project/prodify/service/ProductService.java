@@ -1,6 +1,8 @@
 package com.project.prodify.service;
 
 import com.project.prodify.domain.Product;
+import com.project.prodify.exception.ProductValidationException;
+import com.project.prodify.exception.ValidationException;
 import com.project.prodify.input.ProductRequest;
 import com.project.prodify.output.ProductResponse;
 import com.project.prodify.repository.ProductRepository;
@@ -28,9 +30,11 @@ public class ProductService {
             var productResponse = buildProductResponse(productSaved, "Product created successfully");
             log.info("Product created successfully: {}", productResponse);
             return productResponse;
+        } catch (ValidationException e) {
+            throw new ValidationException(e.getMessage());
         } catch (Exception e) {
-            log.error("Error creating product", e);
-            throw new RuntimeException("Error creating product", e);
+            log.error("Error creating product", e.getMessage());
+            throw new ProductValidationException("Error creating product".concat(e.getMessage()));
         }
     }
 
@@ -53,25 +57,27 @@ public class ProductService {
             var productResponse = buildProductResponse(productSaved, "Product updated successfully");
             log.info("Product updated successfully: {}", productResponse);
             return productResponse;
+        } catch (ValidationException e) {
+            throw new ValidationException(e.getMessage());
         } catch (Exception e) {
             log.error("Error updating product", e);
-            throw new RuntimeException("Error updating product", e);
+            throw new ProductValidationException("Error updating product");
         }
     }
 
     public String deleteProduct(String SKU) {
         try {
-            var prodcut = findProduct(SKU, productRepository::findBySKU);
-            productRepository.delete(prodcut);
-            return "Product deleted successfully --> " + prodcut;
+            var product = findProduct(SKU, productRepository::findBySKU);
+            productRepository.delete(product);
+            return "Product deleted successfully --> " + product;
         } catch (Exception e) {
-            throw new RuntimeException("Error in deleted for product --> " + SKU);
+            throw new ProductValidationException("Error in deleted for product --> " + SKU);
         }
     }
 
     private Product findProduct(String identifier, Function<String, Optional<Product>> finder) {
         return finder.apply(identifier)
-                .orElseThrow(() -> new RuntimeException("Product not found with identifier: " + identifier));
+                .orElseThrow(() -> new ProductValidationException("Product not found with identifier: " + identifier));
     }
 
     private void updateProductDetails(Product product, ProductRequest request) {

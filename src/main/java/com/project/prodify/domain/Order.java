@@ -28,7 +28,6 @@ public class Order {
     private BigDecimal total;
     private LocalDateTime purchaseDate;
 
-
     private BigDecimal calculateTotal() {
         return items.stream()
                 .map(OrderItem::getSubtotal)
@@ -48,5 +47,4 @@ public class Order {
             item.setOrder(this);
         }
     }
-
 }
