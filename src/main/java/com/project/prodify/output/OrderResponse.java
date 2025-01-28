@@ -8,6 +8,7 @@ import java.util.List;
 
 @Builder
 public record OrderResponse(
+        String message,
         Long id,
         List<OrderItemResponse> items,
         BigDecimal total,
