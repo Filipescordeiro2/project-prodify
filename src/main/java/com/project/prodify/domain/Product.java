@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Product {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
         @Column(name = "product_name",unique = true)
@@ -51,6 +51,7 @@ public class Product {
         this.name = request.getName();
         this.price = request.getPrice();
         this.stock = request.getStock();
+        this.status = true;
     }
 
 }

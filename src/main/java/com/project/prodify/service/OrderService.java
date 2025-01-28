@@ -73,6 +73,7 @@ public class OrderService {
             return OrderItemResponse.builder()
                     .SKU(orderItem.getProduct().getSKU())
                     .quantity(orderItem.getQuantity())
+                    .productName(orderItem.getProduct().getName())
                     .subtotal(orderItem.getSubtotal())
                     .build();
         }).collect(Collectors.toList());
@@ -90,9 +91,13 @@ public class OrderService {
         return orderRequest.getItems().stream().map(itemRequest -> {
             Product product = productRepository.findById(itemRequest.getProductId())
                     .orElseThrow(() -> new OrderValidationException("Product not found"));
+            if (!product.isStatus()){
+                log.error("Product "+product.getName()+" is inactive");
+                throw new OrderValidationException("Product is inactive "+product.getSKU());
+            }
             if (product.getStock() < itemRequest.getQuantity()) {
                 log.error("Insufficient stock for product: {}", product.getName());
-                throw new OrderValidationException("Insufficient stock for product: " + product.getName());
+                throw new OrderValidationException("Insufficient stock for product: " + product.getSKU());
             }
             validation.validQuantity(itemRequest.getQuantity());
             product.setStock(product.getStock() - itemRequest.getQuantity());

@@ -48,13 +48,29 @@ public class ProductService {
         return buildProductResponse(product, "Product found successfully");
     }
 
-    public ProductResponse updateProduct(String SKU, ProductRequest request) {
+    public ProductResponse updateStatusProduct(String SKU, Boolean status) {
         try {
-            validation.validateProductRequest(request);
             var product = findProduct(SKU, productRepository::findBySKU);
-            updateProductDetails(product, request);
+            updateProductStatus(product, status);
             var productSaved = productRepository.save(product);
-            var productResponse = buildProductResponse(productSaved, "Product updated successfully");
+            var productResponse = buildProductResponse(productSaved, "Product "+product.getSKU()+" with changed status");
+            log.info("Product with changed status: {}", productResponse);
+            return productResponse;
+        } catch (ValidationException e) {
+            throw new ValidationException(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error updating product", e);
+            throw new ProductValidationException("Error changed status");
+        }
+    }
+
+    public ProductResponse updatProduct(String SKU,ProductRequest request){
+        try {
+            var product = findProduct(SKU,productRepository::findBySKU);
+            validation.validateProductRequestUpdate(request);
+            updateProductDetails(product,request);
+            var productSaved = productRepository.save(product);
+            var productResponse = buildProductResponse(productSaved, "Product "+product.getSKU()+" updated successfully");
             log.info("Product updated successfully: {}", productResponse);
             return productResponse;
         } catch (ValidationException e) {
@@ -80,11 +96,21 @@ public class ProductService {
                 .orElseThrow(() -> new ProductValidationException("Product not found with identifier: " + identifier));
     }
 
-    private void updateProductDetails(Product product, ProductRequest request) {
+    private void updateProductStatus(Product product, boolean status) {
+        product.setStock(product.getStock());
+        product.setPrice(product.getPrice());
+        product.setName(product.getName());
+        product.setSKU(product.getSKU());
+        product.setCreationDate(product.getCreationDate());
+        product.setStatus(status);
+    }
+    private void updateProductDetails(Product product,ProductRequest request) {
         product.setStock(request.getStock());
         product.setPrice(request.getPrice());
         product.setName(request.getName());
         product.setStatus(request.isStatus());
+        product.setSKU(product.getSKU());
+        product.setCreationDate(product.getCreationDate());
     }
 
     private ProductResponse buildProductResponse(Product product, String message) {

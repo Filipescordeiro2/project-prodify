@@ -25,6 +25,12 @@ public class Validation {
         validNameNull(request.getName());
     }
 
+    public void validateProductRequestUpdate(ProductRequest request) {
+        validStock(request.getStock());
+        validPrice(request.getPrice());
+        validNameNull(request.getName());
+    }
+
     public void validStock(int stock) {
         if (stock <= 0) {
             log.error("Stock validation failed: stock cannot be 0 or less than 0 --> " + stock);

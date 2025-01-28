@@ -35,4 +35,16 @@ public class ProductController {
         return productService.deleteProduct(SKU);
     }
 
+    @PatchMapping("/SKU/{SKU}/{status}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProductResponse updateStatusProduct(@PathVariable String SKU, @PathVariable Boolean status){
+        return productService.updateStatusProduct(SKU,status);
+    }
+
+    @PutMapping("SKU/{SKU}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProductResponse updateProduct(@PathVariable String SKU,@RequestBody ProductRequest request){
+        return productService.updatProduct(SKU,request);
+    }
+
 }

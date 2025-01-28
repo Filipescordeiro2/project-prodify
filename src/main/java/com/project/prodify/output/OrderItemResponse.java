@@ -10,5 +10,6 @@ import java.util.List;
 public record OrderItemResponse(
         String SKU,
         int quantity,
+        String productName,
         BigDecimal subtotal) {
 }
