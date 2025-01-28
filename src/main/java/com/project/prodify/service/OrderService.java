@@ -36,22 +36,22 @@ public class OrderService {
             List<OrderItem> orderItems = searchProduct(orderRequest);
             Order order = new Order(orderRequest, orderItems);
             order = orderRepository.save(order);
-            OrderResponse orderResponse = mapToOrderResponse(order);
+            OrderResponse orderResponse = mapToOrderResponse(order, "Order created successfully");
             log.info("Order created successfully: {}", orderResponse);
             return orderResponse;
         } catch (OrderValidationException e) {
+            log.error("Error creating order", e);
+            throw e; // Re-lançar a exceção original
+        } catch (Exception e) {
             log.error("Runtime exception occurred while creating order", e);
             throw new OrderValidationException("Runtime exception occurred while creating order");
-        } catch (Exception e) {
-            log.error("Error creating order", e);
-            throw new OrderValidationException("Error creating order");
         }
     }
 
     public OrderResponse findOrderById(Long id) {
         var order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderValidationException("Order not found"));
-        return mapToOrderResponse(order);
+        return mapToOrderResponse(order, "Order found successfully");
     }
 
     public Page<OrderResponse> findOrdersBySKUProduct(String SKU, Pageable pageable) {
@@ -59,7 +59,7 @@ public class OrderService {
         List<OrderResponse> matchingOrders = orders.stream()
                 .filter(order -> order.getItems().stream()
                         .anyMatch(item -> item.getProduct().getSKU().equals(SKU)))
-                .map(this::mapToOrderResponse)
+                .map(order -> mapToOrderResponse(order, "Orders found successfully"))
                 .collect(Collectors.toList());
 
         if (matchingOrders.isEmpty()) {
@@ -68,7 +68,7 @@ public class OrderService {
         return new PageImpl<>(matchingOrders, pageable, matchingOrders.size());
     }
 
-    private OrderResponse mapToOrderResponse(Order order) {
+    private OrderResponse mapToOrderResponse(Order order, String message) {
         List<OrderItemResponse> itemResponses = order.getItems().stream().map(orderItem -> {
             return OrderItemResponse.builder()
                     .SKU(orderItem.getProduct().getSKU())
@@ -78,6 +78,7 @@ public class OrderService {
         }).collect(Collectors.toList());
 
         return OrderResponse.builder()
+                .message(message)
                 .id(order.getId())
                 .items(itemResponses)
                 .total(order.getTotal())
