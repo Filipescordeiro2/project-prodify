@@ -1,5 +1,10 @@
 # Sistema de Gestão de Produtos e Pedidos
 
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
+![Maven](https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
+![H2](https://img.shields.io/badge/H2-0078D4?style=for-the-badge&logo=h2&logoColor=white)
+
 ## Descrição
 Este projeto é um sistema de gestão de produtos e pedidos desenvolvido em Java 17+. Ele permite que os usuários gerenciem produtos e pedidos de forma eficiente, incluindo funcionalidades para criar, atualizar e recuperar pedidos e produtos.
 
@@ -20,6 +25,18 @@ Este projeto é um sistema de gestão de produtos e pedidos desenvolvido em Java
 - 🔍 **Recuperar Pedido por ID:** Permite a busca de um pedido pelo seu ID.
 - 🔍 **Recuperar Pedidos por SKU do Produto:** Permite a busca de pedidos que contenham um produto específico pelo seu SKU.
 
+## Arquitetura
+O projeto segue a arquitetura de camadas, dividida nas seguintes camadas:
+
+- 🕹️ **Controller:** Responsável por lidar com as requisições HTTP e direcioná-las para os serviços apropriados.
+- 📦 **Domain:** Contém as entidades e objetos de domínio do sistema.
+- ⚠️ **Exception:** Contém as classes de exceção personalizadas para tratamento de erros.
+- 📥 **Input:** Contém os objetos de entrada (DTOs) usados para receber dados das requisições.
+- 📤 **Output:** Contém os objetos de saída (DTOs) usados para enviar dados nas respostas.
+- 🗄️ **Repository:** Contém as interfaces de repositório para acesso aos dados.
+- 🛠️ **Service:** Contém a lógica de negócios e manipulação dos dados.
+- 🔧 **Utils:** Contém classes utilitárias usadas em várias partes do sistema.
+
 ## Diagrama ER do Banco de Dados
 O diagrama Mermaid representa um modelo de banco de dados relacional com três tabelas: `ORDER`, `ORDER_ITEM` e `PRODUCT`.
 
@@ -33,20 +50,62 @@ As relações entre essas tabelas são as seguintes:
 - Um `ORDER` pode conter múltiplas entradas de `ORDER_ITEM`, indicando que um pedido pode ter vários itens.
 - Cada `ORDER_ITEM` referencia um único `PRODUCT`, indicando que cada item em um pedido corresponde a um produto específico.
 
-## Tecnologias Utilizadas
-- ![Java](https://github.com/devicons/devicon/blob/master/icons/java/java-original-wordmark.svg) **Java 17+**
-- ![Spring Boot](https://github.com/devicons/devicon/blob/master/icons/spring/spring-original-wordmark.svg) **Spring Boot**
-- ![Maven](https://github.com/devicons/devicon/blob/master/icons/maven/maven-original-wordmark.svg) **Maven**
-
 ## Começando
 
-### Pré-requisitos
-Liste o software e as ferramentas que precisam ser instalados antes de configurar o projeto.
-- ![Java](https://github.com/devicons/devicon/blob/master/icons/java/java-original-wordmark.svg) **Java 17+**
-- ![Spring Boot](https://github.com/devicons/devicon/blob/master/icons/spring/spring-original-wordmark.svg) **Spring Boot**
-- ![Maven](https://github.com/devicons/devicon/blob/master/icons/maven/maven-original-wordmark.svg) **Maven**
+## Dependências Necessarias
+
+A seguir estão as principais dependências necessárias para o sistema:
+
+- **Spring Boot Starter Data JPA:** Fornece integração com JPA para persistência de dados.
+```xml
+<dependency>
+     <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+```
+- **Spring Boot Starter Validation:** Fornece suporte de validação.
+```xml 
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+  ```
+- **Spring Boot Starter Web:** Fornece suporte para a construção de aplicações web, incluindo serviços RESTful. 
+```xml 
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+  ```
+- **H2 Database:** Um banco de dados na memória para desenvolvimento e teste.
+```xml 
+<dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+</dependency>
+  ```
+- **Lombok:** Uma biblioteca que ajuda a reduzir o código clichê.
+```xml
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.34</version>
+</dependency>
+  ```
+- **Spring Boot Starter Test:** Fornece suporte de teste.
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+  ```
+
 ### Instalação
+
 Passos para configurar o projeto localmente:
+
 1. Clone o repositório:
     ```sh
     git clone https://github.com/Filipescordeiro2/project-prodify.git
@@ -226,10 +285,12 @@ Instruções para executar a aplicação:
   "totalElements": 1
 }
 ```
-# Criador
+## Creator
 
-** Filipe Santana Cordeiro **
- ** Desenvolvedor Beck End **  
+**Filipe Santana Cordeiro**  
+**Backend Developer**
 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/filipesantanacordeiro/)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Filipescordeiro2)
 
 
