@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -23,15 +22,15 @@ public class OrderController {
         return orderService.createOrder(orderRequest);
     }
 
-    @GetMapping("id/{id}")
+    @GetMapping("/id/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public OrderResponse findOrderById(@PathVariable Long id) {
+    public OrderResponse getOrderById(@PathVariable Long id) {
         return orderService.findOrderById(id);
     }
 
-    @GetMapping("SKU/{SKU}")
+    @GetMapping("/SKU/{SKU}")
     @ResponseStatus(HttpStatus.OK)
-    public Page<OrderResponse> findOrdersBySKUProduct(@PathVariable String SKU, Pageable pageable) {
+    public Page<OrderResponse> getOrdersBySKU(@PathVariable String SKU, Pageable pageable) {
         return orderService.findOrdersBySKUProduct(SKU, pageable);
     }
 }

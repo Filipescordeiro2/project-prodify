@@ -1,5 +1,6 @@
 package com.project.prodify.input;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,5 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
-    private List<OrderItemRequest>items;
+
+    @NotEmpty(message = "Order items are required")
+    private List<OrderItemRequest> items;
 }

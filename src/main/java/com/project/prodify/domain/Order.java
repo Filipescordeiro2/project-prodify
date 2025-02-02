@@ -23,7 +23,7 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(nullable = false)
-    private List<OrderItem>items;
+    private List<OrderItem> items;
 
     private BigDecimal total;
     private LocalDateTime purchaseDate;
@@ -35,7 +35,7 @@ public class Order {
     }
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         this.purchaseDate = LocalDateTime.now();
         this.total = calculateTotal();
     }

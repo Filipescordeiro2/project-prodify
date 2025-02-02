@@ -26,6 +26,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OrderService {
 
+    private static final String ORDER_CREATED_SUCCESS = "Order created successfully";
+    private static final String ORDER_FOUND_SUCCESS = "Order found successfully";
+    private static final String ORDERS_FOUND_SUCCESS = "Orders found successfully";
+    private static final String ORDER_NOT_FOUND = "Order not found";
+    private static final String PRODUCT_NOT_FOUND = "Product not found";
+    private static final String PRODUCT_INACTIVE = "Product is inactive ";
+    private static final String INSUFFICIENT_STOCK = "Insufficient stock for product: ";
+    private static final String RUNTIME_EXCEPTION = "Runtime exception occurred while creating order";
+
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final Validation validation;
@@ -36,22 +45,22 @@ public class OrderService {
             List<OrderItem> orderItems = searchProduct(orderRequest);
             Order order = new Order(orderRequest, orderItems);
             order = orderRepository.save(order);
-            OrderResponse orderResponse = mapToOrderResponse(order, "Order created successfully");
-            log.info("Order created successfully: {}", orderResponse);
+            OrderResponse orderResponse = mapToOrderResponse(order, ORDER_CREATED_SUCCESS);
+            log.info(ORDER_CREATED_SUCCESS + ": {}", orderResponse);
             return orderResponse;
         } catch (OrderValidationException e) {
             log.error("Error creating order", e);
-            throw e; // Re-lançar a exceção original
+            throw e;
         } catch (Exception e) {
-            log.error("Runtime exception occurred while creating order", e);
-            throw new OrderValidationException("Runtime exception occurred while creating order");
+            log.error(RUNTIME_EXCEPTION, e);
+            throw new OrderValidationException(RUNTIME_EXCEPTION);
         }
     }
 
     public OrderResponse findOrderById(Long id) {
         var order = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderValidationException("Order not found"));
-        return mapToOrderResponse(order, "Order found successfully");
+                .orElseThrow(() -> new OrderValidationException(ORDER_NOT_FOUND));
+        return mapToOrderResponse(order, ORDER_FOUND_SUCCESS);
     }
 
     public Page<OrderResponse> findOrdersBySKUProduct(String SKU, Pageable pageable) {
@@ -59,7 +68,7 @@ public class OrderService {
         List<OrderResponse> matchingOrders = orders.stream()
                 .filter(order -> order.getItems().stream()
                         .anyMatch(item -> item.getProduct().getSKU().equals(SKU)))
-                .map(order -> mapToOrderResponse(order, "Orders found successfully"))
+                .map(order -> mapToOrderResponse(order, ORDERS_FOUND_SUCCESS))
                 .collect(Collectors.toList());
 
         if (matchingOrders.isEmpty()) {
@@ -71,7 +80,7 @@ public class OrderService {
     private OrderResponse mapToOrderResponse(Order order, String message) {
         List<OrderItemResponse> itemResponses = order.getItems().stream().map(orderItem -> {
             return OrderItemResponse.builder()
-                    .SKU(orderItem.getProduct().getSKU())
+                    .sku(orderItem.getProduct().getSKU())
                     .quantity(orderItem.getQuantity())
                     .productName(orderItem.getProduct().getName())
                     .subtotal(orderItem.getSubtotal())
@@ -90,16 +99,16 @@ public class OrderService {
     private List<OrderItem> searchProduct(OrderRequest orderRequest) {
         return orderRequest.getItems().stream().map(itemRequest -> {
             Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new OrderValidationException("Product not found"));
-            if (!product.isStatus()){
-                log.error("Product "+product.getName()+" is inactive");
-                throw new OrderValidationException("Product is inactive "+product.getSKU());
+                    .orElseThrow(() -> new OrderValidationException(PRODUCT_NOT_FOUND));
+            if (!product.isStatus()) {
+                log.error(PRODUCT_INACTIVE + product.getName());
+                throw new OrderValidationException(PRODUCT_INACTIVE + product.getSKU());
             }
             if (product.getStock() < itemRequest.getQuantity()) {
-                log.error("Insufficient stock for product: {}", product.getName());
-                throw new OrderValidationException("Insufficient stock for product: " + product.getSKU());
+                log.error(INSUFFICIENT_STOCK + product.getName());
+                throw new OrderValidationException(INSUFFICIENT_STOCK + product.getSKU());
             }
-            validation.validQuantity(itemRequest.getQuantity());
+            validation.validateQuantity(itemRequest.getQuantity());
             product.setStock(product.getStock() - itemRequest.getQuantity());
             productRepository.save(product);
             return new OrderItem(itemRequest, product);

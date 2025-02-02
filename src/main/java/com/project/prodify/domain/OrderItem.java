@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "Order_Item")
+@Table(name = "order_items")
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderItem {
@@ -24,7 +24,7 @@ public class OrderItem {
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "product_id",nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column(nullable = false)

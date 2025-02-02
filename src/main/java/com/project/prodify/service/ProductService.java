@@ -19,6 +19,16 @@ import java.util.function.Function;
 @Slf4j
 public class ProductService {
 
+    private static final String PRODUCT_CREATED_SUCCESS = "Product created successfully";
+    private static final String PRODUCT_FOUND_SUCCESS = "Product found successfully";
+    private static final String PRODUCT_UPDATED_SUCCESS = "Product updated successfully";
+    private static final String PRODUCT_STATUS_CHANGED = "Product status changed successfully";
+    private static final String PRODUCT_DELETED_SUCCESS = "Product deleted successfully";
+    private static final String PRODUCT_NOT_FOUND = "Product not found with identifier: ";
+    private static final String ERROR_CREATING_PRODUCT = "Error creating product: ";
+    private static final String ERROR_UPDATING_PRODUCT = "Error updating product: ";
+    private static final String ERROR_DELETING_PRODUCT = "Error deleting product: ";
+
     private final ProductRepository productRepository;
     private final Validation validation;
 
@@ -27,25 +37,25 @@ public class ProductService {
             validation.validateProductRequest(request);
             var product = new Product(request);
             var productSaved = productRepository.save(product);
-            var productResponse = buildProductResponse(productSaved, "Product created successfully");
-            log.info("Product created successfully: {}", productResponse);
+            var productResponse = buildProductResponse(productSaved, PRODUCT_CREATED_SUCCESS);
+            log.info(PRODUCT_CREATED_SUCCESS + ": {}", productResponse);
             return productResponse;
         } catch (ValidationException e) {
             throw new ValidationException(e.getMessage());
         } catch (Exception e) {
-            log.error("Error creating product", e.getMessage());
-            throw new ProductValidationException("Error creating product".concat(e.getMessage()));
+            log.error(ERROR_CREATING_PRODUCT, e);
+            throw new ProductValidationException(ERROR_CREATING_PRODUCT + e.getMessage());
         }
     }
 
     public ProductResponse findProductName(String name) {
         var product = findProduct(name, productRepository::findByName);
-        return buildProductResponse(product, "Product found successfully");
+        return buildProductResponse(product, PRODUCT_FOUND_SUCCESS);
     }
 
     public ProductResponse findProductSKU(String SKU) {
         var product = findProduct(SKU, productRepository::findBySKU);
-        return buildProductResponse(product, "Product found successfully");
+        return buildProductResponse(product, PRODUCT_FOUND_SUCCESS);
     }
 
     public ProductResponse updateStatusProduct(String SKU, Boolean status) {
@@ -53,31 +63,31 @@ public class ProductService {
             var product = findProduct(SKU, productRepository::findBySKU);
             updateProductStatus(product, status);
             var productSaved = productRepository.save(product);
-            var productResponse = buildProductResponse(productSaved, "Product "+product.getSKU()+" with changed status");
-            log.info("Product with changed status: {}", productResponse);
+            var productResponse = buildProductResponse(productSaved, PRODUCT_STATUS_CHANGED);
+            log.info(PRODUCT_STATUS_CHANGED + ": {}", productResponse);
             return productResponse;
         } catch (ValidationException e) {
             throw new ValidationException(e.getMessage());
         } catch (Exception e) {
-            log.error("Error updating product", e);
-            throw new ProductValidationException("Error changed status");
+            log.error(ERROR_UPDATING_PRODUCT, e);
+            throw new ProductValidationException(ERROR_UPDATING_PRODUCT);
         }
     }
 
-    public ProductResponse updatProduct(String SKU,ProductRequest request){
+    public ProductResponse updateProduct(String SKU, ProductRequest request) {
         try {
-            var product = findProduct(SKU,productRepository::findBySKU);
+            var product = findProduct(SKU, productRepository::findBySKU);
             validation.validateProductRequestUpdate(request);
-            updateProductDetails(product,request);
+            updateProductDetails(product, request);
             var productSaved = productRepository.save(product);
-            var productResponse = buildProductResponse(productSaved, "Product "+product.getSKU()+" updated successfully");
-            log.info("Product updated successfully: {}", productResponse);
+            var productResponse = buildProductResponse(productSaved, PRODUCT_UPDATED_SUCCESS);
+            log.info(PRODUCT_UPDATED_SUCCESS + ": {}", productResponse);
             return productResponse;
         } catch (ValidationException e) {
             throw new ValidationException(e.getMessage());
         } catch (Exception e) {
-            log.error("Error updating product", e);
-            throw new ProductValidationException("Error updating product");
+            log.error(ERROR_UPDATING_PRODUCT, e);
+            throw new ProductValidationException(ERROR_UPDATING_PRODUCT);
         }
     }
 
@@ -85,32 +95,26 @@ public class ProductService {
         try {
             var product = findProduct(SKU, productRepository::findBySKU);
             productRepository.delete(product);
-            return "Product deleted successfully --> " + product;
+            return PRODUCT_DELETED_SUCCESS + " --> " + product;
         } catch (Exception e) {
-            throw new ProductValidationException("Error in deleted for product --> " + SKU);
+            throw new ProductValidationException(ERROR_DELETING_PRODUCT + SKU);
         }
     }
 
     private Product findProduct(String identifier, Function<String, Optional<Product>> finder) {
         return finder.apply(identifier)
-                .orElseThrow(() -> new ProductValidationException("Product not found with identifier: " + identifier));
+                .orElseThrow(() -> new ProductValidationException(PRODUCT_NOT_FOUND + identifier));
     }
 
     private void updateProductStatus(Product product, boolean status) {
-        product.setStock(product.getStock());
-        product.setPrice(product.getPrice());
-        product.setName(product.getName());
-        product.setSKU(product.getSKU());
-        product.setCreationDate(product.getCreationDate());
         product.setStatus(status);
     }
-    private void updateProductDetails(Product product,ProductRequest request) {
+
+    private void updateProductDetails(Product product, ProductRequest request) {
         product.setStock(request.getStock());
         product.setPrice(request.getPrice());
         product.setName(request.getName());
-        product.setStatus(request.isStatus());
-        product.setSKU(product.getSKU());
-        product.setCreationDate(product.getCreationDate());
+        product.setStatus(request.getStatus());
     }
 
     private ProductResponse buildProductResponse(Product product, String message) {
@@ -122,7 +126,7 @@ public class ProductService {
                 .status(product.isStatus())
                 .modificationDate(product.getModificationDate())
                 .creationDate(product.getCreationDate())
-                .SKU(product.getSKU())
+                .sku(product.getSKU())
                 .build();
     }
 }

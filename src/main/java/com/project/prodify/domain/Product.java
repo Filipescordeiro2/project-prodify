@@ -19,39 +19,42 @@ import java.util.UUID;
 @Builder
 public class Product {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Column(name = "product_name",unique = true)
-        private String name;
-        @Column(name = "product_sku",unique = true)
-        private String SKU;
-        @Column(name = "product_price")
-        private BigDecimal price;
-        @Column(name = "product_stock")
-        private int stock;
-        private LocalDateTime creationDate;
-        private LocalDateTime modificationDate;
-        private boolean status;
+    @Column(name = "product_name", unique = true)
+    private String name;
+
+    @Column(name = "product_sku", unique = true)
+    private String SKU;
+
+    @Column(name = "product_price")
+    private BigDecimal price;
+
+    @Column(name = "product_stock")
+    private int stock;
+
+    private LocalDateTime creationDate;
+    private LocalDateTime modificationDate;
+    private boolean status;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         this.creationDate = LocalDateTime.now();
         this.modificationDate = LocalDateTime.now();
         this.SKU = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
     }
 
     @PreUpdate
-    public void preUpdate(){
+    public void preUpdate() {
         this.modificationDate = LocalDateTime.now();
     }
 
-    public Product(ProductRequest request){
+    public Product(ProductRequest request) {
         this.name = request.getName();
         this.price = request.getPrice();
         this.stock = request.getStock();
         this.status = true;
     }
-
 }

@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 
 @Builder
 public record ProductResponse(
-          String message
-        , String name
-        , BigDecimal price
-        , int stock
-        , LocalDateTime creationDate
-        , LocalDateTime modificationDate
-        , boolean status
-        , String SKU) {
+        String message,
+        String name,
+        BigDecimal price,
+        int stock,
+        LocalDateTime creationDate,
+        LocalDateTime modificationDate,
+        boolean status,
+        String sku) {
 }

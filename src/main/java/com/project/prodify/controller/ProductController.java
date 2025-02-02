@@ -9,42 +9,44 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/product")
+@RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse  saveProduct (@RequestBody ProductRequest request){
+    public ProductResponse createProduct(@RequestBody ProductRequest request) {
         return productService.saveProduct(request);
     }
 
     @GetMapping("/name/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse findProductName(@PathVariable String name){
+    public ProductResponse getProductByName(@PathVariable String name) {
         return productService.findProductName(name);
     }
+
     @GetMapping("/SKU/{SKU}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse findProductSKU(@PathVariable String SKU){
+    public ProductResponse getProductBySKU(@PathVariable String SKU) {
         return productService.findProductSKU(SKU);
     }
+
     @DeleteMapping("/SKU/{SKU}")
-    public String deletedProduct(@PathVariable String SKU){
-        return productService.deleteProduct(SKU);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable String SKU) {
+        productService.deleteProduct(SKU);
     }
 
-    @PatchMapping("/SKU/{SKU}/{status}")
+    @PatchMapping("/SKU/{SKU}/status/{status}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse updateStatusProduct(@PathVariable String SKU, @PathVariable Boolean status){
-        return productService.updateStatusProduct(SKU,status);
+    public ProductResponse updateProductStatus(@PathVariable String SKU, @PathVariable Boolean status) {
+        return productService.updateStatusProduct(SKU, status);
     }
 
-    @PutMapping("SKU/{SKU}")
+    @PutMapping("/SKU/{SKU}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse updateProduct(@PathVariable String SKU,@RequestBody ProductRequest request){
-        return productService.updatProduct(SKU,request);
+    public ProductResponse updateProduct(@PathVariable String SKU, @RequestBody ProductRequest request) {
+        return productService.updateProduct(SKU, request);
     }
-
 }
