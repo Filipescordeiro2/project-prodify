@@ -1,7 +1,7 @@
 package com.project.prodify.controller;
 
-import com.project.prodify.input.ProductRequest;
-import com.project.prodify.output.ProductResponse;
+import com.project.prodify.dto.request.ProductRequest;
+import com.project.prodify.dto.response.ProductResponse;
 import com.project.prodify.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

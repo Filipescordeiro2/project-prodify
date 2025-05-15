@@ -1,4 +1,4 @@
-package com.project.prodify.output;
+package com.project.prodify.dto.response;
 
 import lombok.Builder;
 

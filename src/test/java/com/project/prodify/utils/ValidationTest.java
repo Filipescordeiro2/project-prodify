@@ -2,7 +2,7 @@ package com.project.prodify.utils;
 
 import com.project.prodify.domain.Product;
 import com.project.prodify.exception.ValidationException;
-import com.project.prodify.input.ProductRequest;
+import com.project.prodify.dto.request.ProductRequest;
 import com.project.prodify.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package com.project.prodify.controller;
 
-import com.project.prodify.input.OrderRequest;
-import com.project.prodify.output.OrderResponse;
+import com.project.prodify.dto.request.OrderRequest;
+import com.project.prodify.dto.response.OrderResponse;
 import com.project.prodify.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,7 +1,7 @@
 package com.project.prodify.utils;
 
 import com.project.prodify.exception.ValidationException;
-import com.project.prodify.input.ProductRequest;
+import com.project.prodify.dto.request.ProductRequest;
 import com.project.prodify.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

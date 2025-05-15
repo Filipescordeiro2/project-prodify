@@ -1,4 +1,4 @@
-package com.project.prodify.input;
+package com.project.prodify.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

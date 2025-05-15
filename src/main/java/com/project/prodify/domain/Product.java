@@ -1,6 +1,6 @@
 package com.project.prodify.domain;
 
-import com.project.prodify.input.ProductRequest;
+import com.project.prodify.dto.request.ProductRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
